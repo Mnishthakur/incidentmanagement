@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Register</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form.username|as_crispy_field }}
+                    {{ form.email|as_crispy_field }}
+                    <div class="password-field mb-3">
+                        {{ form.password1|as_crispy_field }}
+                        <span class="password-toggle" onclick="togglePassword(this)">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="password-field mb-3">
+                        {{ form.password2|as_crispy_field }}
+                        <span class="password-toggle" onclick="togglePassword(this)">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    {{ form.phone_number|as_crispy_field }}
+                    {{ form.address|as_crispy_field }}
+                    {{ form.pincode|as_crispy_field }}
+                    {{ form.city|as_crispy_field }}
+                    {{ form.country|as_crispy_field }}
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+                <hr>
+                <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+function togglePassword(element) {
+    const passwordField = element.parentElement.querySelector('input');
+    const eyeIcon = element.querySelector('i');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+    } else {
+        passwordField.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+    }
+}
+
+$(document).ready(function() {
+    $('#id_pincode').on('change', function() {
+        var pincode = $(this).val();
+        $.get('/get-location-info/', {pincode: pincode}, function(data) {
+            $('#id_city').val(data.city);
+            $('#id_country').val(data.country);
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

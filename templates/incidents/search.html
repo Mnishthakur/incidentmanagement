@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Incidents - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Search Incidents</h3>
+            </div>
+            <div class="card-body">
+                <form method="get" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" name="incident_id" class="form-control" placeholder="Enter Incident ID" value="{{ request.GET.incident_id }}">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+
+                {% if request.GET.incident_id %}
+                    {% if incident %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <tr>
+                                    <th>Incident ID</th>
+                                    <td>{{ incident.incident_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Organization Type</th>
+                                    <td>{{ incident.get_organization_type_display }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Details</th>
+                                    <td>{{ incident.details }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Reported Date</th>
+                                    <td>{{ incident.reported_date|date:"Y-m-d H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Priority</th>
+                                    <td>
+                                        <span class="badge bg-{% if incident.priority == 'HIGH' %}danger{% elif incident.priority == 'MEDIUM' %}warning{% else %}success{% endif %}">
+                                            {{ incident.get_priority_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td>
+                                        <span class="badge bg-{% if incident.status == 'OPEN' %}primary{% elif incident.status == 'IN_PROGRESS' %}info{% else %}secondary{% endif %}">
+                                            {{ incident.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                            {% if incident.status != 'CLOSED' %}
+                                <a href="{% url 'edit_incident' incident.incident_id %}" class="btn btn-primary">Edit Incident</a>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            No incident found with ID: {{ request.GET.incident_id }}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

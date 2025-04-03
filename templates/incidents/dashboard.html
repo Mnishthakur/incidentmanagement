@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>My Incidents</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{% url 'create_incident' %}" class="btn btn-primary">Create New Incident</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        {% if incidents %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Incident ID</th>
+                            <th>Organization Type</th>
+                            <th>Details</th>
+                            <th>Reported Date</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for incident in incidents %}
+                            <tr>
+                                <td>{{ incident.incident_id }}</td>
+                                <td>{{ incident.get_organization_type_display }}</td>
+                                <td>{{ incident.details|truncatechars:50 }}</td>
+                                <td>{{ incident.reported_date|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    <span class="badge bg-{% if incident.priority == 'HIGH' %}danger{% elif incident.priority == 'MEDIUM' %}warning{% else %}success{% endif %}">
+                                        {{ incident.get_priority_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if incident.status == 'OPEN' %}primary{% elif incident.status == 'IN_PROGRESS' %}info{% else %}secondary{% endif %}">
+                                        {{ incident.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if incident.status != 'CLOSED' %}
+                                        <a href="{% url 'edit_incident' incident.incident_id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                You haven't created any incidents yet. <a href="{% url 'create_incident' %}">Create your first incident</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
